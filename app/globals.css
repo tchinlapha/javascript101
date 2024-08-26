@@ -1,6 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.confetti-container canvas {
+    z-index: 10001;
+}
+
 /* react tutorial */
 .my-h1 {
     color: green;

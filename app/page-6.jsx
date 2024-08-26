@@ -1,8 +1,7 @@
-// 12. Final Add Confetti-Boom
+// 6. Add Cost and Add Credit UI & Process
 "use client";
-import React, { useState, useEffect } from "react";
-import { Card, CardBody, CardHeader, CardFooter, Typography, Button, IconButton, List, ListItem, Dialog, DialogHeader, DialogBody, DialogFooter } from "@material-tailwind/react";
-import Confetti from 'react-confetti-boom';
+import React, { useState } from "react";
+import { Card, CardBody, CardHeader, CardFooter, Typography, Button, IconButton, List, ListItem } from "@material-tailwind/react";
 
 const GachaMachine = () => {
   const initialProducts = [
@@ -57,105 +56,32 @@ const GachaMachine = () => {
   ];
 
   const [products, setProducts] = useState(initialProducts);
-  const [availableProducts, setAvailableProducts] = useState([])
   const [message, setMessage] = useState('Please add your credit and click "PLAY GACHA"');
   const [costPerRound, setCostPerRound] = useState(550);
   const [credit, setCredit] = useState(0);
-  const [lastPrize, setLastPrize] = useState(null);
-  const [prizeModalOpen, setPrizeModalOpen] = useState(false);
-  const [creditNotEnoughModalOpen, setCreditNotEnoughModalOpen] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [highlightedIndex, setHighlightedIndex] = useState(null);
-
-  useEffect(() => {
-    updateAvailableProducts();
-  }, [products]);
-
-  function updateAvailableProducts () {
-    const available = products.filter(product => product.stock > 0);
-    setAvailableProducts(available);
-  }
-
-  function updateProductStock(productId) {
-    setProducts(prevProducts => 
-      prevProducts.map(product => 
-        product.id === productId 
-          ? { ...product, stock: product.stock - 1 } 
-          : product
-      )
-    );
-  }
 
   function handleClickAddCredit(amount) {
+    // console.log(amount);
+    // setCredit(credit + amount);
     setCredit((prevCredit) => prevCredit + amount);
-  }
-
-  function handleClickPlayGacha() {
-    if (credit < costPerRound) {
-      setCreditNotEnoughModalOpen(true);
-      setMessage("You don't have enough credit to play!");
-      return;
-    }
-
-    // minus credit
-    setCredit((prevCredit) => prevCredit - costPerRound);
-
-    // Random Product
-    // Delay after product random
-    setIsPlaying(true);
-    let round = availableProducts.length > 1 ? 0 : 50;
-    const intervalId = setInterval(() => {
-      // Returns a random integer from 0 to 5:
-      let randomNumber = Math.floor(Math.random() * availableProducts.length);
-      // จะหาว่า availableProducts id นั้นเป็น index ที่เท่าไหร่ของ product ทั้งหมด
-      setHighlightedIndex(products.findIndex(p => p.id === availableProducts[randomNumber].id));
-      round++;
-      if (round >= 50) {
-        clearInterval(intervalId);
-        const randomProduct = availableProducts[randomNumber];
-        setLastPrize(randomProduct);
-        setPrizeModalOpen(true);
-        setMessage(
-          <>
-            <Typography variant="h6">Congraturation</Typography>
-            <Typography>You won: {randomProduct.name}</Typography>
-          </>
-        );
-        updateProductStock(randomProduct.id);
-        setIsPlaying(false);
-      }
-    }, 100);
   }
 
   return (
     <div className="bg-gray-100 min-h-screen py-8">
       <div className="container mx-auto px-4">
-        
-        {prizeModalOpen && lastPrize && (
-          <div className="confetti-container">
-            <Confetti mode="boom" particleCount={150} shapeSize={12} deg={270} effectCount={1} spreadDeg={50} x={0.5} y={0.25} launchSpeed={1.3} colors={['#ff003b', '#89ff49', '#00b3ff', '#ffd100']} />
-            <Confetti mode="fall" particleCount={150} shapeSize={12} colors={['#ff003b', '#89ff49', '#00b3ff', '#ffd100']} />
-          </div>
-        )}
-        
         <div className="flex flex-col lg:flex-row">
           {/* Left Column */}
           <div className="lg:w-2/3 xl:w-3/4 mt-4">
             {/* Product List */}
             <Card>
               <CardHeader shadow={false} floated={false}>
-                <div className="flex items-center justify-between p-4">
-                  <Typography variant="h4">Gacha Machine</Typography>
-                  <Button color="yellow" onClick={handleClickPlayGacha} disabled={isPlaying}>
-                    {isPlaying ? "Playing..." : "PLAY GACHA"}
-                  </Button>
-                </div>
+                <Typography variant="h4">Gacha Machine</Typography>
               </CardHeader>
               <CardBody>
                 {/* Product Item */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {products.map((product, index) => (
-                    <Card key={index} className={`${highlightedIndex === index ? "ring-4 ring-yellow-500" : ""}`}>
+                    <Card key={index}>
                       <CardBody className="text-center">
                         <Typography variant="h5" className="mb-2 truncate">
                           {product?.name}
@@ -172,10 +98,9 @@ const GachaMachine = () => {
                         <Button 
                           className="mt-2 text-xs" 
                           fullWidth 
-                          color={product.stock > 0 ? "green" : "red"}
-                          disabled={!product.stock}
+                          color="green"
                         >
-                          {product.stock > 0 ? `In Stock: ${product.stock}` : "Out of Stock"}
+                          In Stock: {product?.stock}
                         </Button>
                       </CardBody>
                     </Card>
@@ -234,63 +159,12 @@ const GachaMachine = () => {
                 <Typography variant="h4">Message</Typography>
               </CardHeader>
               <CardBody>
-                <Typography className="text-center" as="div">{message}</Typography>
+                <Typography className="text-center">{message}</Typography>
               </CardBody>
             </Card>
           </div>
         </div>
       </div>
-
-      {/* Prize Won Modal */}
-      <Dialog open={prizeModalOpen}>
-        <DialogHeader>
-          Congratulations!
-        </DialogHeader>
-        <DialogBody divider>
-          {lastPrize && (
-            <div className="text-center">
-              <Typography variant="h3" className="mb-2">
-                {lastPrize.name}
-              </Typography>
-              <img
-                className="mx-auto w-full h-auto max-w-lg object-cover mb-2"
-                src={lastPrize.image}
-                alt={lastPrize.name}
-              />
-              <Typography>{lastPrize.desc}</Typography>
-              <Typography variant="h4" color="red">
-                ฿{lastPrize.price}
-              </Typography>
-            </div>
-          )}
-        </DialogBody>
-        <DialogFooter>
-          <Button variant="gradient" onClick={() => setPrizeModalOpen(false)}>
-            Claim Prize
-          </Button>
-        </DialogFooter>
-      </Dialog>
-
-      {/* Credit Not Enough Modal */}
-      <Dialog open={creditNotEnoughModalOpen}>
-        <DialogHeader>Credit not enough</DialogHeader>
-        <DialogBody divider>
-          <Typography color="red" className="font-bold text-center mb-4">
-            You don't have enough credit to play!
-          </Typography>
-          <Typography>
-            Each play costs ฿{costPerRound}. <br />
-            Your current credit is ฿{credit}. <br />
-            Please add more credit to continue playing.
-          </Typography>
-        </DialogBody>
-        <DialogFooter>
-          <Button variant="gradient" onClick={() => setCreditNotEnoughModalOpen(false)}>
-            <span>Add Credit</span>
-          </Button>
-        </DialogFooter>
-      </Dialog>
-
     </div>
   );
 };

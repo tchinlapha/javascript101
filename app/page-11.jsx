@@ -1,8 +1,7 @@
-// 12. Final Add Confetti-Boom
+// 11. Add function for calculate stock and display
 "use client";
 import React, { useState, useEffect } from "react";
 import { Card, CardBody, CardHeader, CardFooter, Typography, Button, IconButton, List, ListItem, Dialog, DialogHeader, DialogBody, DialogFooter } from "@material-tailwind/react";
-import Confetti from 'react-confetti-boom';
 
 const GachaMachine = () => {
   const initialProducts = [
@@ -130,14 +129,6 @@ const GachaMachine = () => {
   return (
     <div className="bg-gray-100 min-h-screen py-8">
       <div className="container mx-auto px-4">
-        
-        {prizeModalOpen && lastPrize && (
-          <div className="confetti-container">
-            <Confetti mode="boom" particleCount={150} shapeSize={12} deg={270} effectCount={1} spreadDeg={50} x={0.5} y={0.25} launchSpeed={1.3} colors={['#ff003b', '#89ff49', '#00b3ff', '#ffd100']} />
-            <Confetti mode="fall" particleCount={150} shapeSize={12} colors={['#ff003b', '#89ff49', '#00b3ff', '#ffd100']} />
-          </div>
-        )}
-        
         <div className="flex flex-col lg:flex-row">
           {/* Left Column */}
           <div className="lg:w-2/3 xl:w-3/4 mt-4">
@@ -243,9 +234,7 @@ const GachaMachine = () => {
 
       {/* Prize Won Modal */}
       <Dialog open={prizeModalOpen}>
-        <DialogHeader>
-          Congratulations!
-        </DialogHeader>
+        <DialogHeader>Congratulations!</DialogHeader>
         <DialogBody divider>
           {lastPrize && (
             <div className="text-center">
